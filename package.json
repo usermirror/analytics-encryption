@@ -1,0 +1,33 @@
+{
+  "name": "analytics-encryption",
+  "version": "0.0.1",
+  "description": "Config-based encryption for analytics in JavaScript",
+  "main": "lib/index.js",
+  "source": "src/index.ts",
+  "module": "lib/index.mjs",
+  "umd:main": "lib/index.umd.js",
+  "repository": "https://github.com/usermirror/analytics-encryption",
+  "author": "UserMirror, Inc. <open@usermirror.com>",
+  "license": "MIT",
+  "private": false,
+  "scripts": {
+    "test": "ava",
+    "build": "microbundle",
+    "dev": "microbundle watch"
+  },
+  "devDependencies": {
+    "ava": "^1.0.1",
+    "microbundle": "^0.9.0",
+    "ts-node": "^7.0.1",
+    "typescript": "^3.2.2"
+  },
+  "ava": {
+    "compileEnhancements": false,
+    "extensions": [
+      "ts"
+    ],
+    "require": [
+      "ts-node/register"
+    ]
+  }
+}
