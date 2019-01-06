@@ -2,7 +2,7 @@ interface IAnalytics {
   queue?: Event[]
   track?: (event: string, properties?: object) => any
   identify?: (userId: string, properties?: object) => any
-  __analytics?: IAnalytics
+  original?: IAnalytics
 }
 
 type Event = {
@@ -12,6 +12,7 @@ type Event = {
 }
 
 type Options = {
+  replace?: boolean
   analytics?: IAnalytics
   remote?: RemoteOptions
   local?: LocalOptions
@@ -44,9 +45,8 @@ function wrap(opts: Options, analytics: IAnalytics) {
     track: async (...args: [string, object]) => {
       if (!opts.local) return analytics.track.apply(analytics, args)
 
-      let encryptedArgs = await opts.local.encrypt([
-        ['track', args[0], args[1]]
-      ])
+      let evt = ['track', args[0], args[1]] as Event
+      let encryptedArgs = await opts.local.encrypt([evt])
 
       analytics.track.apply(analytics, [
         encryptedArgs[0][1],
@@ -72,11 +72,14 @@ function analyticsEncryption(opts?: Options) {
   if (!opts) opts = {}
 
   let _analytics: IAnalytics
+  let isBrowser: boolean
 
   if (opts.analytics) {
     _analytics = opts.analytics
   } else {
-    if (typeof window !== 'undefined') {
+    isBrowser = typeof window !== 'undefined'
+
+    if (isBrowser) {
       if (typeof window['analytics'] !== 'undefined') {
         _analytics = window['analytics']
       }
@@ -87,7 +90,17 @@ function analyticsEncryption(opts?: Options) {
 
   let encryptedAnalytics: IAnalytics = wrap(opts, _analytics)
 
-  encryptedAnalytics.__analytics = _analytics
+  encryptedAnalytics.original = _analytics
+
+  if (opts.replace) {
+    if (isBrowser) {
+      window['analytics'] = encryptedAnalytics
+    } else {
+      // TODO: Warn whenever mutating input
+      opts.analytics.track = encryptedAnalytics.track
+      opts.analytics.identify = encryptedAnalytics.identify
+    }
+  }
 
   return encryptedAnalytics
 }

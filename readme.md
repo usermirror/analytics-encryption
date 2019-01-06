@@ -1,3 +1,4 @@
+<br/>
 <p align="center">
   <strong><code>analytics-encryption</code></strong>
 </p>
@@ -60,13 +61,14 @@ const apiHost = process.env.UME_API_HOST
 const eclient = new EncryptionClient({ apiHost })
 const originalAnalytics = new Analytics(process.env.WRITE_KEY)
 
-export default const analytics = analyticsEncryption({
+const analytics = analyticsEncryption({
   analytics: originalAnalytics,
   local: { encrypt: eclient.encrypt.bind(eclient) }
 })
 
 const { track, identify } = analytics
 
+export default analytics
 export { track, identify }
 
 // ./app.js
@@ -81,6 +83,37 @@ track('Form Submitted', {
 // turns into
 
 originalAnalytics.track('Form Submitted', {
+  email: 'r8Udt6Swa+Znk7CI5+9W/0xQ7PckBj3+H983fun8LEAtLFnzvJzeuq',
+  name: 'ckBj3+H983ful8KUHuKglyawtfeKLVf4EAN3XEkKhmX',
+  dob: 'xt5crfiZhr5M7IPcbb2q8f8uB/Et77q'
+})
+```
+
+#### Browser
+
+```javascript
+// ./init.js
+import EncryptionClient from '@ume/client'
+import analyticsEncryption from 'analytics-encryption'
+
+const apiHost = process.env.UME_API_HOST
+const eclient = new EncryptionClient({ apiHost })
+
+analyticsEncryption({
+  replace: true,
+  local: { encrypt: eclient.encrypt.bind(eclient) }
+})
+
+// ./app.js
+window.analytics.track('Form Submitted', {
+  email: 'name@example.com',
+  name: 'Example Name',
+  dob: '01-01-1999'
+})
+
+// turns into
+
+window.analytics.original.track('Form Submitted', {
   email: 'r8Udt6Swa+Znk7CI5+9W/0xQ7PckBj3+H983fun8LEAtLFnzvJzeuq',
   name: 'ckBj3+H983ful8KUHuKglyawtfeKLVf4EAN3XEkKhmX',
   dob: 'xt5crfiZhr5M7IPcbb2q8f8uB/Et77q'

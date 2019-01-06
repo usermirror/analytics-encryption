@@ -1,7 +1,8 @@
 {
   "compilerOptions": {
+    "rootDir": "./src",
     "lib": ["es6", "dom"],
-    "rootDir": "./src"
+    "downlevelIteration": true
   },
   "exclude": ["node_modules", "test/**"]
 }

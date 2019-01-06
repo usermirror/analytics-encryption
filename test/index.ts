@@ -7,7 +7,7 @@ test('passthrough', t => {
 
   analytics.track('Test')
 
-  t.is(analytics.__analytics.queue.length, 1)
+  t.is(analytics.original.queue.length, 1)
 })
 
 test('basic hash with await', async t => {
@@ -17,11 +17,11 @@ test('basic hash with await', async t => {
 
   await analytics.track('Test', { prop1: 'abc' })
 
-  t.is(analytics.__analytics.queue.length, 1)
+  t.is(analytics.original.queue.length, 1)
 
-  let [, , properties] = analytics.__analytics.queue[0]
+  let [, , properties] = analytics.original.queue[0] as any
 
-  t.true(properties.prop1 !== 'abc')
+  t.true(properties['prop1'] !== 'abc')
 })
 
 test('basic hash with setTimeout', t => {
@@ -33,11 +33,11 @@ test('basic hash with setTimeout', t => {
 
   return new Promise(resolve => {
     setTimeout(() => {
-      t.is(analytics.__analytics.queue.length, 1)
+      t.is(analytics.original.queue.length, 1)
 
-      let [, , properties] = analytics.__analytics.queue[0]
+      let [, , properties] = analytics.original.queue[0] as any
 
-      t.true(properties.prop1 !== 'abc')
+      t.true(properties['prop1'] !== 'abc')
 
       resolve()
     }, 0)
